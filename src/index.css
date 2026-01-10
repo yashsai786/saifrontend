@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* नीरOrbit Design System - Government-Grade Flood Platform */
+    
+    /* Core Background & Foreground */
+    --background: 220 25% 97%;
+    --foreground: 220 30% 10%;
+    
+    /* Card & Surface Colors */
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 10%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 10%;
+    
+    /* Primary - Deep Navy (Authority & Trust) */
+    --primary: 220 60% 15%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary - Cool Gray */
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 220 30% 20%;
+    
+    /* Muted States */
+    --muted: 220 15% 95%;
+    --muted-foreground: 220 10% 45%;
+    
+    /* Accent - Teal for data highlights */
+    --accent: 195 70% 45%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Destructive - Alert Red */
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Borders & Inputs */
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 220 60% 15%;
+    
+    --radius: 0.5rem;
+    
+    /* Custom नीरOrbit Colors */
+    --neer-navy: 220 60% 12%;
+    --neer-navy-light: 220 45% 25%;
+    --neer-sky: 200 85% 55%;
+    --neer-teal: 175 65% 45%;
+    --neer-water: 200 70% 50%;
+    
+    /* Risk Level Colors */
+    --risk-low: 145 65% 42%;
+    --risk-moderate: 45 95% 50%;
+    --risk-high: 25 95% 55%;
+    --risk-severe: 0 80% 50%;
+    
+    /* Chart Colors */
+    --chart-1: 200 85% 55%;
+    --chart-2: 175 65% 45%;
+    --chart-3: 145 65% 42%;
+    --chart-4: 45 95% 50%;
+    --chart-5: 0 80% 50%;
+    
+    /* Sidebar */
+    --sidebar-background: 220 60% 12%;
+    --sidebar-foreground: 220 15% 90%;
+    --sidebar-primary: 200 85% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 45% 20%;
+    --sidebar-accent-foreground: 220 15% 95%;
+    --sidebar-border: 220 40% 20%;
+    --sidebar-ring: 200 85% 55%;
+  }
+
+  .dark {
+    --background: 220 30% 8%;
+    --foreground: 220 15% 95%;
+    
+    --card: 220 30% 12%;
+    --card-foreground: 220 15% 95%;
+    
+    --popover: 220 30% 12%;
+    --popover-foreground: 220 15% 95%;
+    
+    --primary: 200 85% 55%;
+    --primary-foreground: 220 30% 8%;
+    
+    --secondary: 220 25% 18%;
+    --secondary-foreground: 220 15% 90%;
+    
+    --muted: 220 25% 15%;
+    --muted-foreground: 220 10% 60%;
+    
+    --accent: 175 65% 45%;
+    --accent-foreground: 220 30% 8%;
+    
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 220 25% 20%;
+    --input: 220 25% 20%;
+    --ring: 200 85% 55%;
+    
+    --sidebar-background: 220 35% 6%;
+    --sidebar-foreground: 220 15% 90%;
+    --sidebar-primary: 200 85% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 30% 15%;
+    --sidebar-accent-foreground: 220 15% 95%;
+    --sidebar-border: 220 30% 15%;
+    --sidebar-ring: 200 85% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  /* Risk Badge Variants */
+  .risk-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium;
+  }
+  
+  .risk-low {
+    @apply bg-[hsl(var(--risk-low)/0.15)] text-[hsl(var(--risk-low))];
+  }
+  
+  .risk-moderate {
+    @apply bg-[hsl(var(--risk-moderate)/0.15)] text-[hsl(var(--risk-moderate))];
+  }
+  
+  .risk-high {
+    @apply bg-[hsl(var(--risk-high)/0.15)] text-[hsl(var(--risk-high))];
+  }
+  
+  .risk-severe {
+    @apply bg-[hsl(var(--risk-severe)/0.15)] text-[hsl(var(--risk-severe))];
+  }
+  
+  /* Stat Card */
+  .stat-card {
+    @apply bg-card rounded-xl border border-border p-5 transition-all duration-200;
+  }
+  
+  .stat-card:hover {
+    @apply shadow-lg border-[hsl(var(--neer-sky)/0.3)];
+  }
+  
+  /* Glass Effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-xl border border-white/20;
+  }
+  
+  /* Gradient Backgrounds */
+  .gradient-hero {
+    background: linear-gradient(135deg, hsl(var(--neer-navy)) 0%, hsl(var(--neer-navy-light)) 50%, hsl(var(--neer-water)/0.8) 100%);
+  }
+  
+  .gradient-card {
+    background: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--muted)/0.5) 100%);
+  }
+  
+  /* Alert Animation */
+  .alert-pulse {
+    animation: alertPulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes alertPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  
+  /* Map Container */
+  .map-container {
+    @apply rounded-xl overflow-hidden border border-border;
+  }
+  
+  /* Dashboard Grid */
+  .dashboard-grid {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+  }
+  
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+  
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+}
