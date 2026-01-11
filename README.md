@@ -1,5 +1,7 @@
 # 🌊 नीरOrbit
 
+Backend code is available here: [IntuitiveBackend](https://github.com/yashsai786/IntuitiveBackend.git)
+
 ### Smart Flood Forecasting, Mitigation & Simulation System
 
 > **An AI-powered, real-time flood intelligence and disaster management platform designed to help citizens, authorities, and emergency responders predict, prepare for, and mitigate flood disasters.**
