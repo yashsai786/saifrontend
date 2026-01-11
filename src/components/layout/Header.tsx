@@ -13,6 +13,7 @@ const navLinks = [
   { href: '/detection', label: 'Detection' },
   { href: '/contribute', label: 'Contribute' },
   { href: '/simulation', label: 'Simulation' },
+  { href: 'https://floodsave.netlify.app/', label: 'Relief Map' },
   { href: '/global-flood-map', label: 'Global Map' },
   { href: '/fanalytics', label: 'Flood Analytics' },
   { href: '/leaderboard', label: 'Leaderboard' },
