@@ -324,8 +324,8 @@ import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { floodAPI } from '@/lib/api';
-import type { CrowdsourceReport } from '@/types'; // 👈 YE ADD KAR
-
+import type { CrowdsourceReport } from '@/types';
+import axios from 'axios';
 
 const categories = [
   { value: 'Flood', label: 'Flood Report', icon: AlertTriangle },
@@ -348,13 +348,49 @@ export default function Contribute() {
     image: null as File | null,
   });
 
-  
-  // 🔹 Your contributions state
-const [yourReports, setYourReports] = useState<CrowdsourceReport[]>([]);
+  // Your contributions state
+  const [yourReports, setYourReports] = useState<CrowdsourceReport[]>([]);
   const [isLoadingYourData, setIsLoadingYourData] = useState(false);
   const [yourError, setYourError] = useState<string | null>(null);
+  const [data, setData] = useState<any[]>([]);
 
-  // 🔹 Fetch "Your Data" when authenticated
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const fetchYourReports = async () => {
+      setIsLoadingYourData(true);
+      setYourError(null);
+
+      const token = localStorage.getItem('access');
+      if (!token) {
+        setYourError('Please login again');
+        setIsLoadingYourData(false);
+        return;
+      }
+
+      try {
+        const res = await axios.get(
+          'http://10.200.14.132:8000/api/floodmanagement/crowdsource/',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const reports = Array.isArray(res.data) ? res.data : res.data.results || [];
+        setYourReports(reports);
+      } catch (err) {
+        setYourError('Failed to load your contributions');
+      } finally {
+        setIsLoadingYourData(false);
+      }
+    };
+
+    fetchYourReports();
+  }, [isAuthenticated]);
+
+  // Fetch "Your Data" when authenticated via floodAPI
   useEffect(() => {
     const fetchYourReports = async () => {
       if (!isAuthenticated) {
@@ -364,10 +400,7 @@ const [yourReports, setYourReports] = useState<CrowdsourceReport[]>([]);
       setIsLoadingYourData(true);
       setYourError(null);
       try {
-        // Right now using crowdsourceList (all); later you can switch to user-only endpoint
         const data = await floodAPI.getCrowdsourceList();
-        // Filter on frontend by user if backend is not filtering yet
-        // assuming API returns `user` or `user_email` etc.
         const filtered = user
           ? data.filter((item: any) => item.user === user.id || item.user_email === user.email)
           : data;
@@ -419,7 +452,7 @@ const [yourReports, setYourReports] = useState<CrowdsourceReport[]>([]);
         longitude: parseFloat(formData.longitude),
         category: formData.category,
         description: formData.description,
-        image: formData.image!, // REQUIRED
+        image: formData.image!,
       });
 
       toast({
@@ -435,7 +468,6 @@ const [yourReports, setYourReports] = useState<CrowdsourceReport[]>([]);
         image: null,
       });
 
-      // Refresh your data after new submit
       if (isAuthenticated) {
         setIsLoadingYourData(true);
         try {
@@ -445,7 +477,7 @@ const [yourReports, setYourReports] = useState<CrowdsourceReport[]>([]);
             : data;
           setYourReports(filtered);
         } catch (err: any) {
-          // silent or toast as you like
+          // optional: toast error
         } finally {
           setIsLoadingYourData(false);
         }
@@ -521,7 +553,12 @@ const [yourReports, setYourReports] = useState<CrowdsourceReport[]>([]);
               variant="success"
             />
             <StatCard title="Areas Covered" value="156" subtitle="Districts" icon={MapPin} />
-            <StatCard title="Avg. Response" value="< 2hrs" subtitle="Verification time" icon={History} />
+            <StatCard
+              title="Avg. Response"
+              value="< 2hrs"
+              subtitle="Verification time"
+              icon={History}
+            />
           </div>
 
           {/* Main Tabs */}
@@ -556,7 +593,9 @@ const [yourReports, setYourReports] = useState<CrowdsourceReport[]>([]);
                         <Label htmlFor="category">Category</Label>
                         <Select
                           value={formData.category}
-                          onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
+                          onValueChange={(value) =>
+                            setFormData((prev) => ({ ...prev, category: value }))
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select category" />
@@ -581,7 +620,10 @@ const [yourReports, setYourReports] = useState<CrowdsourceReport[]>([]);
                           placeholder="Describe what you observed..."
                           value={formData.description}
                           onChange={(e) =>
-                            setFormData((prev) => ({ ...prev, description: e.target.value }))
+                            setFormData((prev) => ({
+                              ...prev,
+                              description: e.target.value,
+                            }))
                           }
                           rows={4}
                         />
@@ -633,7 +675,7 @@ const [yourReports, setYourReports] = useState<CrowdsourceReport[]>([]);
                   </CardContent>
                 </Card>
 
-                {/* Image Upload */}
+                {/* Image Upload with TM analysis */}
                 <ImageUploader
                   onImageSelect={(file: File) => {
                     setFormData((prev) => ({ ...prev, image: file }));
@@ -664,7 +706,9 @@ const [yourReports, setYourReports] = useState<CrowdsourceReport[]>([]);
               <Card className="stat-card">
                 <CardHeader>
                   <CardTitle>Your Contributions</CardTitle>
-                  <CardDescription>Track your submitted reports and their status</CardDescription>
+                  <CardDescription>
+                    Track your submitted reports and their status
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {!isAuthenticated ? (
@@ -695,30 +739,27 @@ const [yourReports, setYourReports] = useState<CrowdsourceReport[]>([]);
                           className="border rounded-lg p-4 flex flex-col gap-2 bg-muted/40"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">
-                              {report.category}
-                            </span>
+                            <span className="text-sm font-medium">{report.category}</span>
                             {report.created_at && (
                               <span className="text-xs text-muted-foreground">
                                 {new Date(report.created_at).toLocaleString()}
                               </span>
                             )}
                           </div>
+
                           {report.description && (
                             <p className="text-sm text-muted-foreground">
                               {report.description}
                             </p>
                           )}
+
                           {report.latitude && report.longitude && (
                             <p className="text-xs text-muted-foreground">
                               {report.latitude}, {report.longitude}
                             </p>
                           )}
-                          {report.status && (
-                            <span className="inline-flex items-center rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5 text-xs">
-                              {report.status}
-                            </span>
-                          )}
+
+                          {/* ml_result section can be re-enabled later */}
                         </div>
                       ))}
                     </div>
