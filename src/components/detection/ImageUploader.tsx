@@ -1,5 +1,164 @@
-import { useState, useCallback } from 'react';
-import { Upload, Image, AlertCircle, CheckCircle, Loader2, FileImage, X } from 'lucide-react';
+// import { useState, useCallback } from 'react';
+// import { Upload, Image, AlertCircle, CheckCircle, Loader2, FileImage, X } from 'lucide-react';
+// import { Button } from '@/components/ui/button';
+// import { Progress } from '@/components/ui/progress';
+// import { cn } from '@/lib/utils';
+
+// interface AnalysisResult {
+//   flood_detected: boolean;
+//   confidence: number;
+//   pixel_ratio: number;
+//   explanation: string;
+// }
+
+// interface ImageUploaderProps {
+//   onImageSelect?: (file: File) => void;
+// }
+
+
+// export function ImageUploader({ onImageSelect }: ImageUploaderProps) 
+//  {
+//   const [file, setFile] = useState<File | null>(null);
+//   const [preview, setPreview] = useState<string | null>(null);
+//   const [isAnalyzing, setIsAnalyzing] = useState(false);
+//   const [result, setResult] = useState<AnalysisResult | null>(null);
+//   const [error, setError] = useState<string | null>(null);
+//   const [dragActive, setDragActive] = useState(false);
+  
+//   const handleFile = useCallback((selectedFile: File) => {
+//   if (selectedFile.size > 520 * 1024 * 1024) {
+//     setError('File size must be less than 520 MB');
+//     return;
+//   }
+
+//   setFile(selectedFile);
+//   onImageSelect?.(selectedFile); // 🔥 YAHI MAIN LINE
+
+//   setError(null);
+//   setResult(null);
+
+//   const reader = new FileReader();
+//   reader.onload = (e) => setPreview(e.target?.result as string);
+//   reader.readAsDataURL(selectedFile);
+// }, [onImageSelect]);
+
+//   const handleDrop = useCallback((e: React.DragEvent) => {
+//     e.preventDefault();
+//     setDragActive(false);
+//     if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0]);
+//   }, [handleFile]);
+  
+//   const analyzeImage = async () => {
+//     if (!file) return;
+//     setIsAnalyzing(true);
+//     setError(null);
+    
+//     try {
+//       const formData = new FormData();
+//       formData.append('file', file);
+//       const response = await fetch('https://flood-detection-api-1.onrender.com/analyze/satellite', { method: 'POST', body: formData });
+//       if (!response.ok) throw new Error('Analysis failed');
+//       const data = await response.json();
+//       setResult(data);
+//     } catch {
+//       setResult({
+//         flood_detected: Math.random() > 0.5,
+//         confidence: 0.75 + Math.random() * 0.2,
+//         pixel_ratio: 0.15 + Math.random() * 0.3,
+//         explanation: 'Analysis completed based on satellite imagery patterns.',
+//       });
+//     } finally {
+//       setIsAnalyzing(false);
+//     }
+//   };
+  
+//   const clearFile = () => {
+//     setFile(null);
+//     setPreview(null);
+//     setResult(null);
+//     setError(null);
+//   };
+  
+//   return (
+//     <div className="stat-card animate-fade-in">
+//       <h3 className="text-lg font-semibold mb-4">Satellite & Ground Image Analysis</h3>
+      
+//       {!preview ? (
+//         <div
+//           onDrop={handleDrop}
+//           onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+//           onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
+//           className={cn(
+//             'border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer',
+//             dragActive ? 'border-neer-sky bg-neer-sky/5' : 'border-border hover:border-neer-sky/50'
+//           )}
+//         >
+//           <input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} className="hidden" id="image-upload" />
+//           <label htmlFor="image-upload" className="cursor-pointer">
+//             <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+//             <p className="font-medium mb-1">Drop your image here or click to upload</p>
+//             <p className="text-sm text-muted-foreground">Supports satellite images & ground photos (up to 520 MB)</p>
+//           </label>
+//         </div>
+//       ) : (
+//         <div className="space-y-4">
+//           <div className="relative rounded-xl overflow-hidden bg-secondary/50">
+//             <img src={preview} alt="Upload preview" className="w-full h-64 object-cover" />
+//             <Button variant="destructive" size="icon" className="absolute top-2 right-2" onClick={clearFile}>
+//               <X className="w-4 h-4" />
+//             </Button>
+//           </div>
+          
+//           <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg">
+//             <FileImage className="w-5 h-5 text-neer-sky" />
+//             <div className="flex-1 min-w-0">
+//               <p className="font-medium truncate">{file?.name}</p>
+//               <p className="text-xs text-muted-foreground">{((file?.size || 0) / 1024 / 1024).toFixed(2)} MB</p>
+//             </div>
+//           </div>
+          
+//           {!result && (
+//             <Button variant="hero" size="lg" className="w-full" onClick={analyzeImage} disabled={isAnalyzing}>
+//               {isAnalyzing ? <><Loader2 className="w-5 h-5 animate-spin" /> Analyzing...</> : <><Image className="w-5 h-5" /> Analyze for Flood Detection</>}
+//             </Button>
+//           )}
+          
+//           {result && (
+//             <div className={cn('rounded-xl p-4 border animate-scale-in', result.flood_detected ? 'bg-risk-severe/10 border-risk-severe/30' : 'bg-risk-low/10 border-risk-low/30')}>
+//               <div className="flex items-center gap-3 mb-4">
+//                 {result.flood_detected ? <AlertCircle className="w-6 h-6 text-risk-severe" /> : <CheckCircle className="w-6 h-6 text-risk-low" />}
+//                 <div>
+//                   <p className="font-semibold">{result.flood_detected ? 'Flood Detected' : 'No Flood Detected'}</p>
+//                   <p className="text-sm text-muted-foreground">Confidence: {(result.confidence * 100).toFixed(1)}%</p>
+//                 </div>
+//               </div>
+//               <div className="space-y-3">
+//                 <div>
+//                   <div className="flex justify-between text-sm mb-1">
+//                     <span>Flood Pixel Ratio</span>
+//                     <span>{(result.pixel_ratio * 100).toFixed(1)}%</span>
+//                   </div>
+//                   <Progress value={result.pixel_ratio * 100} className="h-2" />
+//                 </div>
+//                 <p className="text-sm text-muted-foreground">{result.explanation}</p>
+//               </div>
+//               <Button variant="outline" className="w-full mt-4" onClick={clearFile}>Analyze Another Image</Button>
+//             </div>
+//           )}
+//         </div>
+//       )}
+      
+//       {error && (
+//         <div className="mt-4 p-3 bg-destructive/10 border border-destructive/30 rounded-lg flex items-center gap-2 text-destructive">
+//           <AlertCircle className="w-4 h-4" />
+//           <p className="text-sm">{error}</p>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { Upload, Image as ImageIcon, AlertCircle, CheckCircle, Loader2, FileImage, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
@@ -11,143 +170,328 @@ interface AnalysisResult {
   explanation: string;
 }
 
+interface Prediction {
+  className: string;
+  probability: number;
+}
+
 interface ImageUploaderProps {
   onImageSelect?: (file: File) => void;
 }
 
+declare global {
+  interface Window {
+    tmImage: any;
+    tf: any;
+  }
+}
 
-export function ImageUploader({ onImageSelect }: ImageUploaderProps) 
- {
+export function ImageUploader({ onImageSelect }: ImageUploaderProps) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  
-  const handleFile = useCallback((selectedFile: File) => {
-  if (selectedFile.size > 520 * 1024 * 1024) {
-    setError('File size must be less than 520 MB');
-    return;
-  }
 
-  setFile(selectedFile);
-  onImageSelect?.(selectedFile); // 🔥 YAHI MAIN LINE
+  // Teachable Machine
+  const [model, setModel] = useState<any>(null);
+  const [maxPredictions, setMaxPredictions] = useState(0);
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
+  const [modelLoading, setModelLoading] = useState(true);
 
-  setError(null);
-  setResult(null);
+  // Canvas ref to draw uploaded image
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const reader = new FileReader();
-  reader.onload = (e) => setPreview(e.target?.result as string);
-  reader.readAsDataURL(selectedFile);
-}, [onImageSelect]);
+  // Load Teachable Machine model once
+  useEffect(() => {
+    const loadModel = async () => {
+      try {
+        if (!window.tf) {
+          await new Promise<void>((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js';
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load TensorFlow.js'));
+            document.head.appendChild(script);
+          });
+        }
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragActive(false);
-    if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0]);
-  }, [handleFile]);
-  
+        if (!window.tmImage) {
+          await new Promise<void>((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src =
+              'https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js';
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load Teachable Machine image lib'));
+            document.head.appendChild(script);
+          });
+        }
+
+        const URL = 'https://teachablemachine.withgoogle.com/models/OP8l1-zwt/';
+        const modelURL = URL + 'model.json';
+        const metadataURL = URL + 'metadata.json';
+
+        const loadedModel = await window.tmImage.load(modelURL, metadataURL); // [web:4][web:17]
+        setModel(loadedModel);
+        setMaxPredictions(loadedModel.getTotalClasses());
+        setModelLoading(false);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load AI model');
+        setModelLoading(false);
+      }
+    };
+
+    loadModel();
+  }, []);
+
+  const handleFile = useCallback(
+    (selectedFile: File) => {
+      if (selectedFile.size > 520 * 1024 * 1024) {
+        setError('File size must be less than 520 MB');
+        return;
+      }
+
+      setFile(selectedFile);
+      onImageSelect?.(selectedFile);
+
+      setError(null);
+      setResult(null);
+      setPredictions([]);
+
+      const reader = new FileReader();
+      reader.onload = (e) => setPreview(e.target?.result as string);
+      reader.readAsDataURL(selectedFile);
+    },
+    [onImageSelect]
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setDragActive(false);
+      if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0]);
+    },
+    [handleFile]
+  );
+
   const analyzeImage = async () => {
-    if (!file) return;
+    if (!file || !preview || !model || modelLoading) return;
+
     setIsAnalyzing(true);
     setError(null);
-    
+    setPredictions([]);
+
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const response = await fetch('https://flood-detection-api-1.onrender.com/analyze/satellite', { method: 'POST', body: formData });
-      if (!response.ok) throw new Error('Analysis failed');
-      const data = await response.json();
-      setResult(data);
-    } catch {
-      setResult({
-        flood_detected: Math.random() > 0.5,
-        confidence: 0.75 + Math.random() * 0.2,
-        pixel_ratio: 0.15 + Math.random() * 0.3,
-        explanation: 'Analysis completed based on satellite imagery patterns.',
+      // Draw preview image into canvas, then predict on canvas [web:4][web:28]
+      const imgEl = document.createElement('img');
+      imgEl.src = preview;
+      imgEl.crossOrigin = 'anonymous';
+
+      await new Promise<void>((resolve, reject) => {
+        imgEl.onload = () => resolve();
+        imgEl.onerror = () => reject(new Error('Failed to load image'));
       });
+
+      const canvas = canvasRef.current;
+      if (!canvas) throw new Error('Canvas not available');
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas context not available');
+
+      // Set canvas size (Teachable Machine defaults to 224x224, but it will resize internally) [web:4][web:28]
+      canvas.width = imgEl.width || 224;
+      canvas.height = imgEl.height || 224;
+      ctx.drawImage(imgEl, 0, 0, canvas.width, canvas.height);
+
+      const prediction = await model.predict(canvas); // HTMLCanvasElement input [web:4]
+
+      const formatted: Prediction[] = prediction.map((p: any) => ({
+        className: p.className,
+        probability: p.probability,
+      }));
+
+      setPredictions(formatted);
+
+      const topProb = formatted.length
+        ? Math.max(...formatted.map((p) => p.probability))
+        : 0;
+
+      setResult({
+        flood_detected: formatted[0]?.probability > 0.5 || false,
+        confidence: topProb || 0,
+        pixel_ratio: formatted[0]?.probability || 0,
+        explanation: 'Analysis completed using Teachable Machine image model.',
+      });
+    } catch (err) {
+      console.error(err);
+      setError('Image analysis failed');
     } finally {
       setIsAnalyzing(false);
     }
   };
-  
+
   const clearFile = () => {
     setFile(null);
     setPreview(null);
     setResult(null);
+    setPredictions([]);
     setError(null);
   };
-  
+
   return (
     <div className="stat-card animate-fade-in">
       <h3 className="text-lg font-semibold mb-4">Satellite & Ground Image Analysis</h3>
-      
+
+      {/* Hidden canvas for TM prediction */}
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
+
       {!preview ? (
         <div
           onDrop={handleDrop}
-          onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
-          onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragActive(true);
+          }}
+          onDragLeave={(e) => {
+            e.preventDefault();
+            setDragActive(false);
+          }}
           className={cn(
             'border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer',
             dragActive ? 'border-neer-sky bg-neer-sky/5' : 'border-border hover:border-neer-sky/50'
           )}
         >
-          <input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} className="hidden" id="image-upload" />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+            className="hidden"
+            id="image-upload"
+          />
           <label htmlFor="image-upload" className="cursor-pointer">
             <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
             <p className="font-medium mb-1">Drop your image here or click to upload</p>
-            <p className="text-sm text-muted-foreground">Supports satellite images & ground photos (up to 520 MB)</p>
+            <p className="text-sm text-muted-foreground">
+              Supports satellite images & ground photos (up to 520 MB)
+            </p>
           </label>
         </div>
       ) : (
         <div className="space-y-4">
           <div className="relative rounded-xl overflow-hidden bg-secondary/50">
             <img src={preview} alt="Upload preview" className="w-full h-64 object-cover" />
-            <Button variant="destructive" size="icon" className="absolute top-2 right-2" onClick={clearFile}>
+            <Button
+              variant="destructive"
+              size="icon"
+              className="absolute top-2 right-2"
+              onClick={clearFile}
+            >
               <X className="w-4 h-4" />
             </Button>
           </div>
-          
+
           <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg">
             <FileImage className="w-5 h-5 text-neer-sky" />
             <div className="flex-1 min-w-0">
               <p className="font-medium truncate">{file?.name}</p>
-              <p className="text-xs text-muted-foreground">{((file?.size || 0) / 1024 / 1024).toFixed(2)} MB</p>
+              <p className="text-xs text-muted-foreground">
+                {((file?.size || 0) / 1024 / 1024).toFixed(2)} MB
+              </p>
             </div>
           </div>
-          
+
           {!result && (
-            <Button variant="hero" size="lg" className="w-full" onClick={analyzeImage} disabled={isAnalyzing}>
-              {isAnalyzing ? <><Loader2 className="w-5 h-5 animate-spin" /> Analyzing...</> : <><Image className="w-5 h-5" /> Analyze for Flood Detection</>}
+            <Button
+              variant="hero"
+              size="lg"
+              className="w-full"
+              onClick={analyzeImage}
+              disabled={isAnalyzing || modelLoading}
+            >
+              {modelLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" /> Loading AI Model...
+                </>
+              ) : isAnalyzing ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" /> Analyzing...
+                </>
+              ) : (
+                <>
+                  <ImageIcon className="w-5 h-5" /> Analyze for Flood Detection
+                </>
+              )}
             </Button>
           )}
-          
+
           {result && (
-            <div className={cn('rounded-xl p-4 border animate-scale-in', result.flood_detected ? 'bg-risk-severe/10 border-risk-severe/30' : 'bg-risk-low/10 border-risk-low/30')}>
-              <div className="flex items-center gap-3 mb-4">
-                {result.flood_detected ? <AlertCircle className="w-6 h-6 text-risk-severe" /> : <CheckCircle className="w-6 h-6 text-risk-low" />}
-                <div>
-                  <p className="font-semibold">{result.flood_detected ? 'Flood Detected' : 'No Flood Detected'}</p>
-                  <p className="text-sm text-muted-foreground">Confidence: {(result.confidence * 100).toFixed(1)}%</p>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Flood Pixel Ratio</span>
-                    <span>{(result.pixel_ratio * 100).toFixed(1)}%</span>
+            <>
+              <div
+                className={cn(
+                  'rounded-xl p-4 border animate-scale-in',
+                  result.flood_detected
+                    ? 'bg-risk-severe/10 border-risk-severe/30'
+                    : 'bg-risk-low/10 border-risk-low/30'
+                )}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  {result.flood_detected ? (
+                    <AlertCircle className="w-6 h-6 text-risk-severe" />
+                  ) : (
+                    <CheckCircle className="w-6 h-6 text-risk-low" />
+                  )}
+                  <div>
+                    <p className="font-semibold">
+                      {result.flood_detected ? 'Flood Detected' : 'No Flood Detected'}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Confidence: {(result.confidence * 100).toFixed(1)}%
+                    </p>
                   </div>
-                  <Progress value={result.pixel_ratio * 100} className="h-2" />
                 </div>
-                <p className="text-sm text-muted-foreground">{result.explanation}</p>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>Flood Pixel Ratio</span>
+                      <span>{(result.pixel_ratio * 100).toFixed(1)}%</span>
+                    </div>
+                    <Progress value={result.pixel_ratio * 100} className="h-2" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">{result.explanation}</p>
+                </div>
+                <Button variant="outline" className="w-full mt-4" onClick={clearFile}>
+                  Analyze Another Image
+                </Button>
               </div>
-              <Button variant="outline" className="w-full mt-4" onClick={clearFile}>Analyze Another Image</Button>
-            </div>
+
+              {predictions.length > 0 && (
+                <div className="rounded-xl p-4 border border-neer-sky/30 bg-gradient-to-r from-neer-sky/5 to-blue-50">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4" />
+                    Teachable Machine Analysis
+                  </h4>
+                  <div className="space-y-2">
+                    {predictions.map((pred, idx) => (
+                      <div
+                        key={idx}
+                        className="flex justify-between items-center p-2 bg-white/50 rounded-lg border"
+                      >
+                        <span className="font-medium">{pred.className}</span>
+                        <span className="text-sm font-semibold text-neer-sky">
+                          {(pred.probability * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
-      
+
       {error && (
         <div className="mt-4 p-3 bg-destructive/10 border border-destructive/30 rounded-lg flex items-center gap-2 text-destructive">
           <AlertCircle className="w-4 h-4" />
