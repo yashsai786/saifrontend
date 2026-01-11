@@ -1,7 +1,11 @@
 {
-  "files": [],
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
   "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
@@ -12,5 +16,6 @@
     "allowJs": true,
     "noUnusedLocals": false,
     "strictNullChecks": false
-  }
+  },
+  "include": ["src", "src/types"]
 }
